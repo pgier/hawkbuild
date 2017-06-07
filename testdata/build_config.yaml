@@ -1,0 +1,34 @@
+---
+  default-build-target: jb-mm-7.0
+  distributions:
+    my-product-zip-dist:
+      type: zip
+    my-product-container-dist:
+      type: docker
+  projects:
+    test-project1:
+      owner: jdoe
+      version: 1.0
+      maven-name: org.test.test-project1
+      licenses:
+        - ASL 2.0
+      maven-artifacts:
+        - groupId: org.test
+          artifactId: test-project1-artifact1
+      distributions:
+        - my-product-zip-dist
+    test-project2:
+      owner: noone
+      version: 2.1.0.Beta1
+      maven-name: org.test.test-project2
+      licenses:
+        - ASL 2.0
+        - EPL
+      maven-artifacts:
+        - groupId: org.test
+          artifactId: test-project2-artifact1
+        - artifactId: test-project2-artifact2
+          type: war
+      distributions:
+        - my-product-zip-dist
+        - my-product-container-dist
