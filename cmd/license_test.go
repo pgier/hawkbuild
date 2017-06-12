@@ -11,7 +11,7 @@ func TestLicenseCmd(t *testing.T) {
 
 func TestLicenseCmdReverse(t *testing.T) {
 	args := []string{"-v",
-		"--config", "testoutput/build-config.yaml",
+		"--config", "testoutput/build-config-cmd.yaml",
 		"-l", "testdata/licenses.yaml",
 		"-r", "testdata/license-report.xml"}
 	LicenseCmd(args)
