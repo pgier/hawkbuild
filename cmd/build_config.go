@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"encoding/xml"
@@ -10,17 +10,14 @@ import (
 
 // License represents a software license for a package/project
 type License struct {
-	XMLName     xml.Name `xml:"license"`
-	Name        string   `xml:"name" yaml:"name"`
+	Name        string
 	ShortName   string   `xml:"-" yaml:"short-name"`
+	AltNames    []string `xml:"-" yaml:"alt-names"`
 	UpstreamURL string   `xml:"url" yaml:"upstream-url"`
 }
 
-// Licenses lists the licenses
-type Licenses struct {
-	List []License `yaml:"licenses"`
-	Map  map[string]License
-}
+// Licenses map of license name to license metadata
+type Licenses map[string]License
 
 // MavenArtifact represents a jar file or other Maven build artifact
 type MavenArtifact struct {
@@ -48,12 +45,6 @@ type BuildConfig struct {
 	Projects      map[string]Project
 }
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
 // ReadLicenses reads license information from a yaml file
 func ReadLicenses(licenseFile string) Licenses {
 	licenseDat, err := ioutil.ReadFile(licenseFile)
@@ -61,10 +52,10 @@ func ReadLicenses(licenseFile string) Licenses {
 	var licenses = Licenses{}
 	err = yaml.Unmarshal(licenseDat, &licenses)
 	check(err)
-	licenses.Map = make(map[string]License)
+	/*licenses.Map = make(map[string]License)
 	for _, license := range licenses.List {
 		licenses.Map[license.ShortName] = license
-	}
+	}*/
 	return licenses
 }
 
@@ -88,11 +79,11 @@ func WriteBuildConfig(config BuildConfig, filename string) {
 	f.Write(configData)
 }
 
-// GetLicenses gets a list of licenses with the given shortnames from the map
-func GetLicenses(licMap map[string]License, licShortNames []string) []License {
-	licList := make([]License, len(licShortNames))
-	for i, shortName := range licShortNames {
-		licList[i] = licMap[shortName]
+// GetLicenses gets a list of license structs with the given names from the map
+func GetLicenses(licenses map[string]License, licNames []string) []License {
+	licList := make([]License, len(licNames))
+	for i, name := range licNames {
+		licList[i] = licenses[name]
 	}
 	return licList
 }

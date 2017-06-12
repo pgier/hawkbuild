@@ -1,6 +1,26 @@
-package main
+package cmd
 
-import "strings"
+import (
+	"fmt"
+	"os"
+	"strings"
+)
+
+func check(err error) {
+	//fmt.Println("got an error")
+	if err != nil {
+		panic(err)
+	}
+}
+
+func checkFile(file string) {
+	fileMode, err := os.Stat(file)
+	if os.IsNotExist(err) {
+		panic(err)
+	} else if fileMode.IsDir() {
+		panic(fmt.Sprintf("File is a directory: %s", file))
+	}
+}
 
 // StringInSlice checks if a string is contained in the slice
 func StringInSlice(a string, list []string) bool {

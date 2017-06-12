@@ -6,7 +6,7 @@
     my-product-container-dist:
       type: docker
   projects:
-    test-project1:
+    my-test-project1:
       owner: jdoe
       version: 1.0
       maven-name: org.test.test-project1
@@ -17,7 +17,7 @@
           artifactId: test-project1-artifact1
       distributions:
         - my-product-zip-dist
-    test-project2:
+    my-test-project2:
       owner: noone
       version: 2.1.0.Beta1
       maven-name: org.test.test-project2
