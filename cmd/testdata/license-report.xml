@@ -5,30 +5,34 @@
       <groupId>org.test.project1</groupId>
       <artifactId>project1-artifact1</artifactId>
       <version>1.0</version>
-      <license>
-        <name>Apache Software License 2.0</name>
-        <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-      </license>
-      <license>
-        <name>Eclipse Public License, Version 1.0</name>
-        <url>http://www.eclipse.org/legal/epl-v10.html</url>
-      </license>
+      <licenses>
+        <license>
+          <name>Apache Software License 2.0</name>
+          <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+        <license>
+          <name>Eclipse Public License, Version 1.0</name>
+          <url>http://www.eclipse.org/legal/epl-v10.html</url>
+        </license>
+      </licenses>
     </dependency>
     <dependency>
       <groupId>org.test.project2</groupId>
-      <artifactId>project2-artifact2</artifactId>
+      <artifactId>project2-artifact1</artifactId>
       <version>2.1</version>
-      <license>
-        <name>Apache Software License 2.0</name>
-        <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-      </license>
+      <licenses>
+        <license>
+          <name>Apache Software License 2.0</name>
+          <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+      </licenses>
     </dependency>
     <dependency>
       <groupId>org.test.project2</groupId>
       <artifactId>project2-artifact2</artifactId>
       <version>2.2.Beta1</version>
       <license>
-        <name>Apache Software License 2.0</name>
+        <name>The Apache Software License, Version 2.0</name>
         <url>http://www.apache.org/licenses/LICENSE-2.0</url>
       </license>
     </dependency>

@@ -56,22 +56,9 @@ func TestWriteProjectLicenseSummaryXML(t *testing.T) {
 	WriteLicenseReportFile(licenses, buildConfig, licenseReportXMLFile)
 	licenseReportXML := ReadLicenseReportFile(licenseReportXMLFile)
 
-	if found, artifact := FindArtifact(expectedArtifact1, licenseReportXML.Artifacts); found {
-		assertEqual(t, "1.0", artifact.Version)
-	} else {
-		t.Fatal("No matching artifact in license summary")
-	}
-
-}
-
-// FindArtifact searches the list to find an artifact with the given id
-func FindArtifact(artifactID string, artifactList []MavenArtifact) (bool, MavenArtifact) {
-	for _, artifact := range artifactList {
-		if artifact.ArtifactID == artifactID {
-			return true, artifact
-		}
-	}
-	return false, MavenArtifact{}
+	found, artifact := findArtifactByArtifactID(licenseReportXML.Artifacts, expectedArtifact1)
+	assertTrue(t, found)
+	assertEqual(t, "1.0", artifact.Version)
 }
 
 func TestConvertBuildConfigToLicenseSummary(t *testing.T) {
@@ -80,18 +67,26 @@ func TestConvertBuildConfigToLicenseSummary(t *testing.T) {
 	assertEqual(t, expectedProjectVersion, config.Projects[testProjectName].Version)
 	assertEqual(t, expectedArtifact1, config.Projects[testProjectName].MavenArtifacts[0].ArtifactID)
 	licenseSummary := ConvertBuildConfigToLicenseSummary(licenses, config)
-	ok, artifact := FindArtifact(expectedArtifact1, licenseSummary.Artifacts)
+	ok, artifact := findArtifactByArtifactID(licenseSummary.Artifacts, expectedArtifact1)
 	assertTrue(t, ok)
 	assertEqual(t, expectedArtifact1, artifact.ArtifactID)
 }
 
 func TestReadLicenseReportFile(t *testing.T) {
 	licenseSummary := ReadLicenseReportFile(licenseReportTestInputFile)
-	assertEqual(t, expectedProjectVersion, licenseSummary.Artifacts[0].Version)
+	assertEqual(t, 3, len(licenseSummary.Artifacts))
+	found, artifact := findArtifactByArtifactID(licenseSummary.Artifacts, "project1-artifact1")
+	assertTrue(t, found)
+	assertEqual(t, expectedProjectVersion, artifact.Version)
+	assertEqual(t, "Apache Software License 2.0", artifact.Licenses[0].Name)
+	assertEqual(t, 2, len(artifact.Licenses))
 }
 
-func TestConvertLicenseReportToBuildConfig(t *testing.T) {
-	licenseSummary := ReadLicenseReportFile(licenseReportTestInputFile)
-	config := ConvertLicenseSummaryToBuildConfig(licenseSummary)
+func TestLicenseReportToBuildConfig(t *testing.T) {
+	licenseReport := ReadLicenseReportFile(licenseReportTestInputFile)
+	licenses := ReadLicenses(testLicensesFile)
+	config := LicenseReportToBuildConfig(licenses, licenseReport)
+	assertEqual(t, 2, len(config.Projects))
 	assertEqual(t, expectedProjectVersion, config.Projects["org.test.project1"].Version)
+	assertEqual(t, 1, len(config.Projects["org.test.project1"].MavenArtifacts))
 }

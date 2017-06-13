@@ -41,7 +41,7 @@ func LicenseCmd(args []string) {
 	if *reverseFlag {
 		checkLicenseReportFile(*reportFile)
 		licReport := ReadLicenseReportFile(*reportFile)
-		buildConfig := ConvertLicenseSummaryToBuildConfig(licReport)
+		buildConfig := LicenseReportToBuildConfig(licenses, licReport)
 		WriteBuildConfig(buildConfig, *configFile)
 	} else {
 		checkBuildConfigFile(*configFile)
@@ -103,6 +103,7 @@ func WriteLicenseReportFile(licenses Licenses, config BuildConfig, outputFile st
 	check(err)
 	defer f.Close()
 	f.WriteString(xml.Header + string(xmlBytes))
+	fmt.Printf("Wrote license report file: %s\n", outputFile)
 }
 
 // ConvertBuildConfigToLicenseSummary converts from build config to license summary
@@ -111,7 +112,7 @@ func ConvertBuildConfigToLicenseSummary(licenses Licenses, config BuildConfig) L
 	licenseReport := LicenseReport{}
 	for _, project := range config.Projects {
 		for _, artifact := range project.MavenArtifacts {
-			artifact.Licenses = GetLicenses(licShortNameMap, project.Licenses)
+			artifact.Licenses = getMatchingLicenses(licShortNameMap, project.Licenses)
 			if IsEmptyString(artifact.Version) {
 				artifact.Version = project.Version
 			}
@@ -133,23 +134,46 @@ func createLicenseShortNameMap(licenses map[string]License) map[string]License {
 	return licensesByShortName
 }
 
-// ConvertLicenseSummaryToBuildConfig converts from license summary to build config
-func ConvertLicenseSummaryToBuildConfig(licReport LicenseReport) BuildConfig {
+// LicenseReportToBuildConfig converts from license summary to build config
+func LicenseReportToBuildConfig(licenses Licenses, licReport LicenseReport) BuildConfig {
 	config := BuildConfig{Projects: make(map[string]Project)}
 	for _, artifact := range licReport.Artifacts {
-		if _, ok := config.Projects[artifact.GroupID]; !ok {
-			config.Projects[artifact.GroupID] = Project{Version: artifact.Version}
+		if _, exists := config.Projects[artifact.GroupID]; !exists {
+			config.Projects[artifact.GroupID] = Project{Version: artifact.Version, Licenses: []string{}}
 		}
 		project := config.Projects[artifact.GroupID]
-		for _, license := range artifact.Licenses {
-			if !StringInSlice(license.ShortName, project.Licenses) {
-				project.Licenses = append(project.Licenses, license.ShortName)
+		for _, nextLicense := range artifact.Licenses {
+			if license, found := findLicenseByName(licenses, nextLicense.Name); found {
+				if !StringInSlice(license.ShortName, project.Licenses) {
+					project.Licenses = append(project.Licenses, license.ShortName)
+				}
+			} else {
+				fmt.Printf("License '%s' not found in license config.\n", nextLicense.Name)
 			}
 		}
 		if IsEmptyString(project.Version) {
 			project.Version = artifact.Version
 		}
-		config.Projects[artifact.GroupID] = project
+		if IsEmptyString(project.MavenGroupID) {
+			project.MavenGroupID = artifact.GroupID
+		}
+		if project.MavenGroupID == artifact.GroupID {
+			artifact.GroupID = ""
+		}
+		project.MavenArtifacts = append(project.MavenArtifacts, artifact)
+		config.Projects[project.MavenGroupID] = project
 	}
 	return config
+}
+
+func findLicenseByName(licenses Licenses, name string) (License, bool) {
+	if license, found := licenses[name]; found {
+		return license, true
+	}
+	for _, license := range licenses {
+		if StringInSlice(name, license.AltNames) {
+			return license, true
+		}
+	}
+	return License{}, false
 }

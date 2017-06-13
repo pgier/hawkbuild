@@ -15,4 +15,9 @@ func TestLicenseCmdReverse(t *testing.T) {
 		"-l", "testdata/licenses.yaml",
 		"-r", "testdata/license-report.xml"}
 	LicenseCmd(args)
+	buildConfig := ReadBuildConfig("testoutput/build-config-cmd.yaml")
+	assertEqual(t, 2, len(buildConfig.Projects))
+	assertEqual(t, 1, len(buildConfig.Projects["org.test.project1"].MavenArtifacts))
+	assertEqual(t, 2, len(buildConfig.Projects["org.test.project2"].MavenArtifacts))
+	assertEqual(t, 2, len(buildConfig.Projects["org.test.project1"].Licenses))
 }

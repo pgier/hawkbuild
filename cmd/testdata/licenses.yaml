@@ -4,6 +4,8 @@
 Apache Software License 2.0:
   short-name: ASL 2.0
   upstream-url: 'http://www.apache.org/licenses/LICENSE-2.0'
+  alt-names:
+    - The Apache Software License, Version 2.0
 Eclipse Public License, Version 1.0:
   short-name: EPL
   upstream-url: 'http://www.eclipse.org/legal/epl-v10.html'
