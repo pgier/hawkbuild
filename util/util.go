@@ -1,4 +1,4 @@
-package cmd
+package util
 
 import (
 	"fmt"
@@ -6,14 +6,15 @@ import (
 	"strings"
 )
 
-func check(err error) {
-	//fmt.Println("got an error")
+// Check if error is nil or panic
+func Check(err error) {
 	if err != nil {
 		panic(err)
 	}
 }
 
-func checkFile(file string) {
+// CheckFileExists if file exists and is not a directory or panic
+func CheckFileExists(file string) {
 	fileMode, err := os.Stat(file)
 	if os.IsNotExist(err) {
 		panic(err)
