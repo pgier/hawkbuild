@@ -1,10 +1,15 @@
-package resources
+package config
 
-// DefaultLicenseConfig default license config yaml
+// DefaultLicenseConfig default license config based on the Fedora Licensing
+// list (https://fedoraproject.org/wiki/Licensing:Main) which in turn is is
+// based on the licenses approved by the Free Software Foundation , OSI
+// and consultation with Red Hat Legal.
 const DefaultLicenseConfig = `
 ---
-# Official list of licenses maintained on the Fedora wiki
+# Based on the Fedora license list maintained on the Fedora wiki
 # https://fedoraproject.org/wiki/Licensing:Main
+#
+
 Apache Software License 2.0:
   short-name: ASL 2.0
   upstream-url: 'http://www.apache.org/licenses/LICENSE-2.0'

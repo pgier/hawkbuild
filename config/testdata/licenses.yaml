@@ -1,12 +1,12 @@
 ---
 # Official list of licenses maintained on the Fedora wiki
 # https://fedoraproject.org/wiki/Licensing:Main
-Apache Software License 2.0:
-  short-name: ASL 2.0
-  upstream-url: 'http://www.apache.org/licenses/LICENSE-2.0'
+Dummy License 1.0:
+  short-name: DL 1.0
+  upstream-url: 'http://www.foo.bar/license.txt'
   alt-names:
-    - The Apache Software License, Version 2.0
-Eclipse Public License, Version 1.0:
-  short-name: EPL
-  upstream-url: 'http://www.eclipse.org/legal/epl-v10.html'
+    - Test Dummy License, Version 1.0
+Dummy License, Version 2.0:
+  short-name: DL 2.0
+  upstream-url: 'http://www.foo.com/license-2.0.txt'
 ...

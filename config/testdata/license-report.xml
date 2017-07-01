@@ -11,8 +11,8 @@
           <url>http://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
         <license>
-          <name>Eclipse Public License, Version 1.0</name>
-          <url>http://www.eclipse.org/legal/epl-v10.html</url>
+          <name>Dummy License 1.0</name>
+          <url>http://www.foo.bar/license.txt</url>
         </license>
       </licenses>
     </dependency>

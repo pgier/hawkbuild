@@ -20,15 +20,14 @@ const (
 )
 
 func TestReadLicenses(t *testing.T) {
-	licenses := ReadLicenses(testLicensesFile)
-	const expectedLicenseCount = 2
-	util.AssertEqual(t, expectedLicenseCount, len(licenses))
+	licenses := ReadLicenseConfig(testLicensesFile)
+	const minExpectedLicenseCount = 2
+	util.AssertTrue(t, minExpectedLicenseCount < len(licenses))
 	util.AssertEqual(t, apacheLicenseShortName, licenses[apacheLicenseFullName].ShortName)
-
 }
 
 func TestCreateLicenseShortNameMap(t *testing.T) {
-	licenses := ReadLicenses(testLicensesFile)
+	licenses := ReadLicenseConfig(testLicensesFile)
 	licShortNameMap := createLicenseShortNameMap(licenses)
 	util.AssertEqual(t, apacheLicenseFullName, licShortNameMap[apacheLicenseShortName].Name)
 }
@@ -55,7 +54,7 @@ func TestReadMissingFile(t *testing.T) {
 }
 
 func TestWriteProjectLicenseSummaryXML(t *testing.T) {
-	licenses := ReadLicenses(testLicensesFile)
+	licenses := ReadLicenseConfig(testLicensesFile)
 	buildConfig := ReadBuildConfig(testBuildConfigFile)
 	util.AssertEqual(t, expectedProjectVersion, buildConfig.Projects[testProjectName].Version)
 	WriteLicenseReportFile(licenses, buildConfig, licenseReportXMLFile)
@@ -67,7 +66,7 @@ func TestWriteProjectLicenseSummaryXML(t *testing.T) {
 }
 
 func TestConvertBuildConfigToLicenseSummary(t *testing.T) {
-	licenses := ReadLicenses(testLicensesFile)
+	licenses := ReadLicenseConfig(testLicensesFile)
 	config := ReadBuildConfig(testBuildConfigFile)
 	util.AssertEqual(t, expectedProjectVersion, config.Projects[testProjectName].Version)
 	util.AssertEqual(t, expectedArtifact1, config.Projects[testProjectName].MavenArtifacts[0].ArtifactID)
@@ -89,7 +88,7 @@ func TestReadLicenseReportFile(t *testing.T) {
 
 func TestLicenseReportToBuildConfig(t *testing.T) {
 	licenseReport := ReadLicenseReportFile(licenseReportTestInputFile)
-	licenses := ReadLicenses(testLicensesFile)
+	licenses := ReadLicenseConfig(testLicensesFile)
 	config := LicenseReportToBuildConfig(licenses, licenseReport)
 	util.AssertEqual(t, 2, len(config.Projects))
 	util.AssertEqual(t, expectedProjectVersion, config.Projects["org.test.project1"].Version)

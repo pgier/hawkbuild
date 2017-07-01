@@ -23,7 +23,7 @@
       maven-name: org.test.test-project2
       licenses:
         - ASL 2.0
-        - EPL
+        - DL 1.0
       maven-artifacts:
         - groupId: org.test
           artifactId: test-project2-artifact1

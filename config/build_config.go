@@ -48,14 +48,21 @@ type BuildConfig struct {
 	Projects      map[string]Project
 }
 
-// ReadLicenses reads license information from a yaml file
-func ReadLicenses(licenseFile string) Licenses {
-	checkLicenseFile(licenseFile)
-	licenseDat, err := ioutil.ReadFile(licenseFile)
-	util.Check(err)
+// ReadLicenseConfig reads license information from a yaml file
+// will panic if the file is not found
+func ReadLicenseConfig(licenseFile string) Licenses {
 	var licenses = Licenses{}
-	err = yaml.Unmarshal(licenseDat, &licenses)
+	err := yaml.Unmarshal([]byte(DefaultLicenseConfig), &licenses)
 	util.Check(err)
+
+	fileMode, err := os.Stat(licenseFile)
+	if err == nil && !fileMode.IsDir() {
+		licenseDat, err := ioutil.ReadFile(licenseFile)
+		util.Check(err)
+		err = yaml.Unmarshal(licenseDat, &licenses)
+		util.Check(err)
+	}
+
 	return licenses
 }
 
