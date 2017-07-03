@@ -3,7 +3,7 @@ package config
 import (
 	"testing"
 
-	"github.com/pgier/hawkbuild/util"
+	"github.com/pgier/hawkbuild/test"
 )
 
 const (
@@ -22,26 +22,26 @@ const (
 func TestReadLicenses(t *testing.T) {
 	licenses := ReadLicenseConfig(testLicensesFile)
 	const minExpectedLicenseCount = 2
-	util.AssertTrue(t, minExpectedLicenseCount < len(licenses))
-	util.AssertEqual(t, apacheLicenseShortName, licenses[apacheLicenseFullName].ShortName)
+	test.AssertTrue(t, minExpectedLicenseCount < len(licenses))
+	test.AssertEqual(t, apacheLicenseShortName, licenses[apacheLicenseFullName].ShortName)
 }
 
 func TestCreateLicenseShortNameMap(t *testing.T) {
 	licenses := ReadLicenseConfig(testLicensesFile)
 	licShortNameMap := createLicenseShortNameMap(licenses)
-	util.AssertEqual(t, apacheLicenseFullName, licShortNameMap[apacheLicenseShortName].Name)
+	test.AssertEqual(t, apacheLicenseFullName, licShortNameMap[apacheLicenseShortName].Name)
 }
 
 func TestReadBuildConfig(t *testing.T) {
 	config := ReadBuildConfig(testBuildConfigFile)
 	const expectedPackageCount = 2
-	util.AssertEqual(t, expectedPackageCount, len(config.Projects))
+	test.AssertEqual(t, expectedPackageCount, len(config.Projects))
 	const expectedLicenseName = apacheLicenseShortName
 	project1 := config.Projects[testProjectName]
-	util.AssertTrue(t, (len(project1.Licenses) > 0))
-	util.AssertEqual(t, expectedLicenseName, project1.Licenses[0])
-	util.AssertEqual(t, expectedProjectVersion, project1.Version)
-	util.AssertEqual(t, expectedArtifact1, project1.MavenArtifacts[0].ArtifactID)
+	test.AssertTrue(t, (len(project1.Licenses) > 0))
+	test.AssertEqual(t, expectedLicenseName, project1.Licenses[0])
+	test.AssertEqual(t, expectedProjectVersion, project1.Version)
+	test.AssertEqual(t, expectedArtifact1, project1.MavenArtifacts[0].ArtifactID)
 }
 
 func TestReadMissingFile(t *testing.T) {
@@ -56,41 +56,41 @@ func TestReadMissingFile(t *testing.T) {
 func TestWriteProjectLicenseSummaryXML(t *testing.T) {
 	licenses := ReadLicenseConfig(testLicensesFile)
 	buildConfig := ReadBuildConfig(testBuildConfigFile)
-	util.AssertEqual(t, expectedProjectVersion, buildConfig.Projects[testProjectName].Version)
+	test.AssertEqual(t, expectedProjectVersion, buildConfig.Projects[testProjectName].Version)
 	WriteLicenseReportFile(licenses, buildConfig, licenseReportXMLFile)
 	licenseReportXML := ReadLicenseReportFile(licenseReportXMLFile)
 
 	found, artifact := findArtifactByArtifactID(licenseReportXML.Artifacts, expectedArtifact1)
-	util.AssertTrue(t, found)
-	util.AssertEqual(t, "1.0", artifact.Version)
+	test.AssertTrue(t, found)
+	test.AssertEqual(t, "1.0", artifact.Version)
 }
 
 func TestConvertBuildConfigToLicenseSummary(t *testing.T) {
 	licenses := ReadLicenseConfig(testLicensesFile)
 	config := ReadBuildConfig(testBuildConfigFile)
-	util.AssertEqual(t, expectedProjectVersion, config.Projects[testProjectName].Version)
-	util.AssertEqual(t, expectedArtifact1, config.Projects[testProjectName].MavenArtifacts[0].ArtifactID)
+	test.AssertEqual(t, expectedProjectVersion, config.Projects[testProjectName].Version)
+	test.AssertEqual(t, expectedArtifact1, config.Projects[testProjectName].MavenArtifacts[0].ArtifactID)
 	licenseSummary := ConvertBuildConfigToLicenseSummary(licenses, config)
 	ok, artifact := findArtifactByArtifactID(licenseSummary.Artifacts, expectedArtifact1)
-	util.AssertTrue(t, ok)
-	util.AssertEqual(t, expectedArtifact1, artifact.ArtifactID)
+	test.AssertTrue(t, ok)
+	test.AssertEqual(t, expectedArtifact1, artifact.ArtifactID)
 }
 
 func TestReadLicenseReportFile(t *testing.T) {
 	licenseSummary := ReadLicenseReportFile(licenseReportTestInputFile)
-	util.AssertEqual(t, 3, len(licenseSummary.Artifacts))
+	test.AssertEqual(t, 3, len(licenseSummary.Artifacts))
 	found, artifact := findArtifactByArtifactID(licenseSummary.Artifacts, "project1-artifact1")
-	util.AssertTrue(t, found)
-	util.AssertEqual(t, expectedProjectVersion, artifact.Version)
-	util.AssertEqual(t, "Apache Software License 2.0", artifact.Licenses[0].Name)
-	util.AssertEqual(t, 2, len(artifact.Licenses))
+	test.AssertTrue(t, found)
+	test.AssertEqual(t, expectedProjectVersion, artifact.Version)
+	test.AssertEqual(t, "Apache Software License 2.0", artifact.Licenses[0].Name)
+	test.AssertEqual(t, 2, len(artifact.Licenses))
 }
 
 func TestLicenseReportToBuildConfig(t *testing.T) {
 	licenseReport := ReadLicenseReportFile(licenseReportTestInputFile)
 	licenses := ReadLicenseConfig(testLicensesFile)
 	config := LicenseReportToBuildConfig(licenses, licenseReport)
-	util.AssertEqual(t, 2, len(config.Projects))
-	util.AssertEqual(t, expectedProjectVersion, config.Projects["org.test.project1"].Version)
-	util.AssertEqual(t, 1, len(config.Projects["org.test.project1"].MavenArtifacts))
+	test.AssertEqual(t, 2, len(config.Projects))
+	test.AssertEqual(t, expectedProjectVersion, config.Projects["org.test.project1"].Version)
+	test.AssertEqual(t, 1, len(config.Projects["org.test.project1"].MavenArtifacts))
 }
