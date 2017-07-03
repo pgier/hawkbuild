@@ -30,6 +30,8 @@ func Main(args []string) {
 	case "license", "licenses":
 		cmd.LicenseCmd(args[2:])
 	default:
-		panic(fmt.Sprintf("%q is not valid command.\n", args[1]))
+		fmt.Printf(fmt.Sprintf("%q %q is not valid command.\n", args[0], args[1]))
+		printHelp()
+		os.Exit(1)
 	}
 }
