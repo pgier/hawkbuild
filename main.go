@@ -17,6 +17,10 @@ func printHelp() {
 	fmt.Printf(" license - %s\n", cmd.LicenseCmdDescription)
 }
 
+func printVersion() {
+	fmt.Printf("%v version %v\n", os.Args[0], "0.1")
+}
+
 // Main program entry point
 func Main(args []string) {
 	if len(args) < 2 {
@@ -27,6 +31,8 @@ func Main(args []string) {
 	switch args[1] {
 	case "-h", "--help", "help":
 		printHelp()
+	case "-v", "--version", "version":
+		printVersion()
 	case "license", "licenses":
 		cmd.LicenseCmd(args[2:])
 	default:
