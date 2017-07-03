@@ -10,16 +10,16 @@ import (
 func TestLicenseCmd(t *testing.T) {
 	args := []string{"--config", "../config/testdata/build-config.yaml",
 		"-l", "../config/testdata/licenses.yaml",
-		"-r", "testoutput/licence-cmd-report.xml"}
+		"-t", "testoutput/licence-cmd-report.xml"}
 	LicenseCmd(args)
 }
 
 func TestLicenseCmdReverse(t *testing.T) {
 	const buildConfigOutputFile = "testoutput/build-config-cmd.yaml"
-	args := []string{"-v",
+	args := []string{"-r",
 		"--config", buildConfigOutputFile,
 		"-l", "../config/testdata/licenses.yaml",
-		"-r", "../config/testdata/license-report.xml"}
+		"-t", "../config/testdata/license-report.xml"}
 	LicenseCmd(args)
 	buildConfig := config.ReadBuildConfig(buildConfigOutputFile)
 	test.AssertEqual(t, 2, len(buildConfig.Projects))

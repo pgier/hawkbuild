@@ -47,6 +47,6 @@ func TestMain_LicenseCmd(t *testing.T) {
 	args := []string{execName, "license",
 		"--config", "config/testdata/build-config.yaml",
 		"-l", "config/testdata/licenses.yaml",
-		"-r", "testoutput/licence-cmd-report.xml"}
+		"-t", "testoutput/licence-cmd-report.xml"}
 	Main(args)
 }

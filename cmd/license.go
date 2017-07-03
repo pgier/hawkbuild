@@ -24,9 +24,9 @@ func LicenseCmd(args []string) {
 	licenseConfigFile := licenseFlags.String("license-config", defaultLicenseConfigFile, "Path to licenses file")
 	licenseFlags.StringVar(licenseConfigFile, "l", defaultLicenseConfigFile, "Same as -license-config")
 	reportFile := licenseFlags.String("report", defaultLicenseReportFile, "Path to license report file")
-	licenseFlags.StringVar(reportFile, "r", defaultLicenseReportFile, "Same as -report")
+	licenseFlags.StringVar(reportFile, "t", defaultLicenseReportFile, "Same as -report")
 	reverseFlag := licenseFlags.Bool("reverse", false, "Reverse process so that build config is generated from license report")
-	licenseFlags.BoolVar(reverseFlag, "v", false, "Same as -reverse")
+	licenseFlags.BoolVar(reverseFlag, "r", false, "Same as -reverse")
 	err := licenseFlags.Parse(args)
 	util.Check(err)
 
