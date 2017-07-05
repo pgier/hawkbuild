@@ -39,9 +39,9 @@ func TestLicenseCmd(t *testing.T) {
 }
 
 func TestLicenseCmdGenerateConfig(t *testing.T) {
-	const buildConfigOutputFile = "testoutput/test-reverse-build-config.yaml"
+	const productConfigOutputFile = "testoutput/test-reverse-build-config.yaml"
 	args := []string{"license", "-g",
-		"--config", buildConfigOutputFile,
+		"--config", productConfigOutputFile,
 		"-l", "../config/testdata/licenses.yaml",
 		"-r", "../config/testdata/license-report.xml"}
 	RootCmd.SetArgs(args)
@@ -49,9 +49,9 @@ func TestLicenseCmdGenerateConfig(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to run basic command: %v", err)
 	}
-	buildConfig := config.ReadBuildConfig(buildConfigOutputFile)
-	test.AssertEqual(t, 2, len(buildConfig.Projects))
-	test.AssertEqual(t, 1, len(buildConfig.Projects["org.test.project1"].MavenArtifacts))
-	test.AssertEqual(t, 2, len(buildConfig.Projects["org.test.project2"].MavenArtifacts))
-	test.AssertEqual(t, 2, len(buildConfig.Projects["org.test.project1"].Licenses))
+	productConfig := config.ReadProductConfig(productConfigOutputFile)
+	test.AssertEqual(t, 2, len(productConfig.Projects))
+	test.AssertEqual(t, 1, len(productConfig.Projects["org.test.project1"].MavenArtifacts))
+	test.AssertEqual(t, 2, len(productConfig.Projects["org.test.project2"].MavenArtifacts))
+	test.AssertEqual(t, 2, len(productConfig.Projects["org.test.project1"].Licenses))
 }

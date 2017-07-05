@@ -24,7 +24,7 @@ import (
 
 const (
 	testLicensesFile           = "testdata/licenses.yaml"
-	testBuildConfigFile        = "testdata/build-config.yaml"
+	testProductConfigFile      = "testdata/build-config.yaml"
 	testProjectName            = "my-test-project1"
 	apacheLicenseShortName     = "ASL 2.0"
 	apacheLicenseFullName      = "Apache Software License 2.0"
@@ -32,7 +32,7 @@ const (
 	licenseReportXMLFile       = "testoutput/license-report.xml"
 	expectedArtifact1          = "test-project1-artifact1"
 	licenseReportTestInputFile = "testdata/license-report.xml"
-	buildConfigOutputFile      = "testoutput/build-config-test.yaml"
+	ProductConfigOutputFile    = "testoutput/build-config-test.yaml"
 )
 
 func TestReadLicenses(t *testing.T) {
@@ -48,8 +48,8 @@ func TestCreateLicenseShortNameMap(t *testing.T) {
 	test.AssertEqual(t, apacheLicenseFullName, licShortNameMap[apacheLicenseShortName].Name)
 }
 
-func TestReadBuildConfig(t *testing.T) {
-	config := ReadBuildConfig(testBuildConfigFile)
+func TestReadProductConfig(t *testing.T) {
+	config := ReadProductConfig(testProductConfigFile)
 	const expectedPackageCount = 2
 	test.AssertEqual(t, expectedPackageCount, len(config.Projects))
 	const expectedLicenseName = apacheLicenseShortName
@@ -66,14 +66,14 @@ func TestReadMissingFile(t *testing.T) {
 			t.Errorf("The code did not panic")
 		}
 	}()
-	ReadBuildConfig("bad_filename")
+	ReadProductConfig("bad_filename")
 }
 
 func TestWriteProjectLicenseSummaryXML(t *testing.T) {
 	licenses := ReadLicenseConfig(testLicensesFile)
-	buildConfig := ReadBuildConfig(testBuildConfigFile)
-	test.AssertEqual(t, expectedProjectVersion, buildConfig.Projects[testProjectName].Version)
-	WriteLicenseReportFile(licenses, buildConfig, licenseReportXMLFile)
+	productConfig := ReadProductConfig(testProductConfigFile)
+	test.AssertEqual(t, expectedProjectVersion, productConfig.Projects[testProjectName].Version)
+	WriteLicenseReportFile(licenses, productConfig, licenseReportXMLFile)
 	licenseReportXML := ReadLicenseReportFile(licenseReportXMLFile)
 
 	found, artifact := findArtifactByArtifactID(licenseReportXML.Artifacts, expectedArtifact1)
@@ -81,12 +81,12 @@ func TestWriteProjectLicenseSummaryXML(t *testing.T) {
 	test.AssertEqual(t, "1.0", artifact.Version)
 }
 
-func TestConvertBuildConfigToLicenseSummary(t *testing.T) {
+func TestConvertProductConfigToLicenseSummary(t *testing.T) {
 	licenses := ReadLicenseConfig(testLicensesFile)
-	config := ReadBuildConfig(testBuildConfigFile)
+	config := ReadProductConfig(testProductConfigFile)
 	test.AssertEqual(t, expectedProjectVersion, config.Projects[testProjectName].Version)
 	test.AssertEqual(t, expectedArtifact1, config.Projects[testProjectName].MavenArtifacts[0].ArtifactID)
-	licenseSummary := ConvertBuildConfigToLicenseSummary(licenses, config)
+	licenseSummary := ConvertProductConfigToLicenseSummary(licenses, config)
 	ok, artifact := findArtifactByArtifactID(licenseSummary.Artifacts, expectedArtifact1)
 	test.AssertTrue(t, ok)
 	test.AssertEqual(t, expectedArtifact1, artifact.ArtifactID)
@@ -102,10 +102,10 @@ func TestReadLicenseReportFile(t *testing.T) {
 	test.AssertEqual(t, 2, len(artifact.Licenses))
 }
 
-func TestLicenseReportToBuildConfig(t *testing.T) {
+func TestLicenseReportToProductConfig(t *testing.T) {
 	licenseReport := ReadLicenseReportFile(licenseReportTestInputFile)
 	licenses := ReadLicenseConfig(testLicensesFile)
-	config := LicenseReportToBuildConfig(licenses, licenseReport)
+	config := LicenseReportToProductConfig(licenses, licenseReport)
 	test.AssertEqual(t, 2, len(config.Projects))
 	test.AssertEqual(t, expectedProjectVersion, config.Projects["org.test.project1"].Version)
 	test.AssertEqual(t, 1, len(config.Projects["org.test.project1"].MavenArtifacts))

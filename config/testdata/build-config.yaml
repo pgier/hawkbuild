@@ -23,6 +23,10 @@
     my-test-project1:
       owner: jdoe
       version: 1.0
+      scm-url: "http://github.com/my-test-project1"
+      commit-id: abcd1234
+      build-type: maven-build
+      build-options:
       maven-name: org.test.test-project1
       licenses:
         - ASL 2.0

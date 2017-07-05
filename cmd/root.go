@@ -17,10 +17,12 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/pgier/hawkbuild/util"
 	"github.com/spf13/cobra"
 )
 
 var cfgFile string
+var verbose bool
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -36,9 +38,14 @@ func Execute() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	var err error
+	cfgFile, err = RootCmd.Flags().GetString("config")
+	util.Check(err)
 }
 
 func init() {
 	RootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c",
 		"hawkbuild.yaml", "File containing build configurations")
+	RootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false,
+		"Enable verbose output")
 }

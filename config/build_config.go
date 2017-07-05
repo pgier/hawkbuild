@@ -49,6 +49,8 @@ type MavenArtifact struct {
 
 // Project represents a project build configuration
 type Project struct {
+	// Owner/maintainer of the project config
+	Owner   string
 	Version string
 	// MavenName represents the top level groupId:artifactId of the project
 	MavenGroupID string `yaml:"maven-groupid,omitempty"`
@@ -56,10 +58,14 @@ type Project struct {
 	MavenTopArtifactID string          `yaml:"maven-top-artifactid,omitempty"`
 	Licenses           []string        `yaml:"licenses"`
 	MavenArtifacts     []MavenArtifact `yaml:"maven-artifacts" xml:"dependencies"`
+	BuildType          string
+	ScmURL             string
+	CommitID           string
+	BuildOptions       string
 }
 
-// BuildConfig represents a list of project build configs
-type BuildConfig struct {
+// ProductConfig represents a list of project build configs and related info
+type ProductConfig struct {
 	defaultTarget string
 	Projects      map[string]Project
 }
@@ -82,19 +88,19 @@ func ReadLicenseConfig(licenseFile string) Licenses {
 	return licenses
 }
 
-// ReadBuildConfig reads build configuration information from a yaml file
-func ReadBuildConfig(buildConfigFile string) BuildConfig {
-	checkBuildConfigFile(buildConfigFile)
-	configDat, err := ioutil.ReadFile(buildConfigFile)
+// ReadProductConfig reads build configuration information from a yaml file
+func ReadProductConfig(productConfigFile string) ProductConfig {
+	util.CheckFileExists(productConfigFile)
+	configDat, err := ioutil.ReadFile(productConfigFile)
 	util.Check(err)
-	config := BuildConfig{}
+	config := ProductConfig{}
 	err = yaml.Unmarshal(configDat, &config)
 	util.Check(err)
 	return config
 }
 
-// WriteBuildConfig writes a build config to a file
-func WriteBuildConfig(config BuildConfig, filename string) {
+// WriteProductConfig writes a build config to a file
+func WriteProductConfig(config ProductConfig, filename string) {
 	configData, err := yaml.Marshal(config)
 	util.Check(err)
 	f, err := os.Create(filename)
@@ -122,21 +128,6 @@ func findArtifactByArtifactID(artifacts []MavenArtifact, artifactID string) (boo
 	return false, MavenArtifact{}
 }
 
-func checkLicenseFile(file string) {
-	fmt.Printf("Reading license file %s\n", file)
-	util.CheckFileExists(file)
-}
-
-func checkBuildConfigFile(file string) {
-	fmt.Printf("Reading build config file %s\n", file)
-	util.CheckFileExists(file)
-}
-
-func checkLicenseReportFile(file string) {
-	fmt.Printf("Reading license report file %s\n", file)
-	util.CheckFileExists(file)
-}
-
 // LicenseReport list of artifacts and associated licenses
 type LicenseReport struct {
 	XMLName   xml.Name        `xml:"licenseSummary"`
@@ -145,7 +136,7 @@ type LicenseReport struct {
 
 // ReadLicenseReportFile reads license report info from XML file
 func ReadLicenseReportFile(licenseReportFile string) LicenseReport {
-	checkLicenseReportFile(licenseReportFile)
+	util.CheckFileExists(licenseReportFile)
 	fileDat, err := ioutil.ReadFile(licenseReportFile)
 	util.Check(err)
 	licenseReport := LicenseReport{}
@@ -155,8 +146,8 @@ func ReadLicenseReportFile(licenseReportFile string) LicenseReport {
 }
 
 // WriteLicenseReportFile writes license information to an XML file
-func WriteLicenseReportFile(licenses Licenses, config BuildConfig, outputFile string) {
-	licenseSummary := ConvertBuildConfigToLicenseSummary(licenses, config)
+func WriteLicenseReportFile(licenses Licenses, config ProductConfig, outputFile string) {
+	licenseSummary := ConvertProductConfigToLicenseSummary(licenses, config)
 	xmlBytes, err := xml.MarshalIndent(licenseSummary, "", "  ")
 	util.Check(err)
 
@@ -167,8 +158,8 @@ func WriteLicenseReportFile(licenses Licenses, config BuildConfig, outputFile st
 	fmt.Printf("Wrote license report file: %s\n", outputFile)
 }
 
-// ConvertBuildConfigToLicenseSummary converts from build config to license summary
-func ConvertBuildConfigToLicenseSummary(licenses Licenses, config BuildConfig) LicenseReport {
+// ConvertProductConfigToLicenseSummary converts from build config to license summary
+func ConvertProductConfigToLicenseSummary(licenses Licenses, config ProductConfig) LicenseReport {
 	licShortNameMap := createLicenseShortNameMap(licenses)
 	licenseReport := LicenseReport{}
 	for _, project := range config.Projects {
@@ -195,9 +186,9 @@ func createLicenseShortNameMap(licenses map[string]License) map[string]License {
 	return licensesByShortName
 }
 
-// LicenseReportToBuildConfig converts from license summary to build config
-func LicenseReportToBuildConfig(licenses Licenses, licReport LicenseReport) BuildConfig {
-	config := BuildConfig{Projects: make(map[string]Project)}
+// LicenseReportToProductConfig converts from license summary to build config
+func LicenseReportToProductConfig(licenses Licenses, licReport LicenseReport) ProductConfig {
+	config := ProductConfig{Projects: make(map[string]Project)}
 	for _, artifact := range licReport.Artifacts {
 		if _, exists := config.Projects[artifact.GroupID]; !exists {
 			config.Projects[artifact.GroupID] = Project{Version: artifact.Version, Licenses: []string{}}

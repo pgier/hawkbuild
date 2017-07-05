@@ -54,8 +54,7 @@ func init() {
 }
 
 func runLicenseCmd(cmd *cobra.Command) {
-	configFile, err := cmd.Flags().GetString("config")
-	util.Check(err)
+	configFile := cfgFile
 	licenseConfigFile, err := cmd.Flags().GetString("license-config")
 	util.Check(err)
 	licenseReportFile, err := cmd.Flags().GetString("report")
@@ -76,10 +75,10 @@ func runLicenseCmd(cmd *cobra.Command) {
 
 	if generateConfig {
 		licReport := config.ReadLicenseReportFile(licenseReportFile)
-		buildConfig := config.LicenseReportToBuildConfig(licenses, licReport)
-		config.WriteBuildConfig(buildConfig, configFile)
+		productConfig := config.LicenseReportToProductConfig(licenses, licReport)
+		config.WriteProductConfig(productConfig, configFile)
 	} else {
-		buildConfig := config.ReadBuildConfig(configFile)
-		config.WriteLicenseReportFile(licenses, buildConfig, licenseReportFile)
+		productConfig := config.ReadProductConfig(configFile)
+		config.WriteLicenseReportFile(licenses, productConfig, licenseReportFile)
 	}
 }
