@@ -47,21 +47,21 @@ type MavenArtifact struct {
 	Licenses   []License `xml:"licenses>license" yaml:"-"`
 }
 
-// Project represents a project build configuration
+// Project contains project metadata and build configuration
 type Project struct {
-	// Owner/maintainer of the project config
-	Owner   string
-	Version string
-	// MavenName represents the top level groupId:artifactId of the project
-	MavenGroupID string `yaml:"maven-groupid,omitempty"`
-	// MavenTopArtifact the top level/parent maven artifact of the project
-	MavenTopArtifactID string          `yaml:"maven-top-artifactid,omitempty"`
-	Licenses           []string        `yaml:"licenses"`
-	MavenArtifacts     []MavenArtifact `yaml:"maven-artifacts" xml:"dependencies"`
-	BuildType          string
-	ScmURL             string
-	CommitID           string
-	BuildOptions       string
+	Owner            string
+	Version          string
+	UpstreamVersion  string          `yaml:"upstream-version,omitempty"`
+	UpstreamScmURL   string          `yaml:"upstream-scm-url"`
+	MavenGroupID     string          `yaml:"maven-groupid,omitempty"`
+	PackageName      string          `yaml:"package-name"`
+	MavenPackageName string          `yaml:"maven-package-name,omitempty"`
+	Licenses         []string        `yaml:"licenses"`
+	MavenArtifacts   []MavenArtifact `yaml:"maven-artifacts" xml:"dependencies"`
+	BuildType        string          `yaml:"build-type"`
+	ScmURL           string          `yaml:"scm-url"`
+	CommitID         string
+	BuildOptions     string `yaml:"build-options,omitempty"`
 }
 
 // ProductConfig represents a list of project build configs and related info
