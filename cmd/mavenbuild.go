@@ -22,15 +22,10 @@ import (
 // mavenBuildCmd represents the mavenBuild command
 var mavenBuildCmd = &cobra.Command{
 	Use:   "maven-build",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Run the brew maven-build command",
+	Long:  "Run the brew maven-build command",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("mavenBuild called")
+		runMavenBuildCmd(cmd, args)
 	},
 }
 
@@ -46,4 +41,8 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// mavenBuildCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+
+func runMavenBuildCmd(cmd *cobra.Command, args []string) {
+	fmt.Printf("Running maven build cmd")
 }

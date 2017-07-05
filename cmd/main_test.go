@@ -17,7 +17,6 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	"os"
 	"testing"
 )
@@ -29,6 +28,5 @@ func TestMain(m *testing.M) {
 }
 
 func setup() {
-	fmt.Print("Setup for testing \n")
 	os.Mkdir("testoutput", 0777)
 }

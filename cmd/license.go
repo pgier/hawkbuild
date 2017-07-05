@@ -37,7 +37,6 @@ var licenseCmd = &cobra.Command{
 	Short: "Management and reporting for project licenses",
 	Long:  "Management and reporting for project licenses",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("license called")
 		runLicenseCmd(cmd)
 	},
 }
@@ -46,11 +45,12 @@ func init() {
 	RootCmd.AddCommand(licenseCmd)
 
 	licenseCmd.Flags().StringP("license-config", "l",
-		defaultLicenseConfigFile, "License report XML file")
-	licenseCmd.Flags().StringP("report", "t",
+		defaultLicenseConfigFile, "License config file")
+	licenseCmd.Flags().StringP("report", "r",
 		defaultLicenseReportFile, "License report XML file")
-	licenseCmd.Flags().BoolP("reverse", "r", false,
-		"Reverse process so that build config is generated from license")
+	licenseCmd.Flags().BoolP("generate-config", "g", false,
+		`Generate a build config from an existing license report file.  This
+		is the reverse of the default process`)
 }
 
 func runLicenseCmd(cmd *cobra.Command) {
@@ -60,7 +60,7 @@ func runLicenseCmd(cmd *cobra.Command) {
 	util.Check(err)
 	licenseReportFile, err := cmd.Flags().GetString("report")
 	util.Check(err)
-	reverse, err := cmd.Flags().GetBool("reverse")
+	generateConfig, err := cmd.Flags().GetBool("generate-config")
 	util.Check(err)
 
 	defer func() {
@@ -74,7 +74,7 @@ func runLicenseCmd(cmd *cobra.Command) {
 	}
 	licenses := config.ReadLicenseConfig(licenseConfigFile)
 
-	if reverse {
+	if generateConfig {
 		licReport := config.ReadLicenseReportFile(licenseReportFile)
 		buildConfig := config.LicenseReportToBuildConfig(licenses, licReport)
 		config.WriteBuildConfig(buildConfig, configFile)

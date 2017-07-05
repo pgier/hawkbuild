@@ -17,16 +17,51 @@ limitations under the License.
 package main
 
 import (
+	"os"
 	"os/exec"
 	"testing"
+
+	"github.com/pgier/hawkbuild/cmd"
+	"github.com/pgier/hawkbuild/config"
+	"github.com/pgier/hawkbuild/test"
 )
+
+func TestMain(m *testing.M) {
+	setup()
+	retCode := m.Run()
+	os.Exit(retCode)
+}
+
+func setup() {
+	os.Mkdir("testoutput", 0777)
+}
 
 const execName = "hawkbuild"
 
-func TestMain_DefaultFork(t *testing.T) {
+func TestHelp(t *testing.T) {
+	args := []string{"--help"}
+	cmd.RootCmd.SetArgs(args)
+	main()
+}
+
+func TestDefaultCmd(t *testing.T) {
 	cmd := exec.Command(execName)
 	err := cmd.Run()
 	if err != nil {
-		t.Fatalf("Unable to run basic command: %v", err)
+		t.Fatalf("Unable to run command: %v", err)
 	}
+}
+
+func TestLicenseCmdExec(t *testing.T) {
+	licenseReportFile := "testoutput/test-license-report.xml"
+	cmd := exec.Command(execName, "license",
+		"--config", "config/testdata/build-config.yaml",
+		"-l", "config/testdata/licenses.yaml",
+		"-r", licenseReportFile)
+	err := cmd.Run()
+	if err != nil {
+		t.Fatalf("Unable to run command: %v", err)
+	}
+	licenseReport := config.ReadLicenseReportFile(licenseReportFile)
+	test.AssertTrue(t, len(licenseReport.Artifacts) > 1)
 }

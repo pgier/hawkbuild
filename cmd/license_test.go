@@ -17,7 +17,6 @@ limitations under the License.
 package cmd
 
 import (
-	"os/exec"
 	"testing"
 
 	"github.com/pgier/hawkbuild/config"
@@ -26,11 +25,12 @@ import (
 
 func TestLicenseCmd(t *testing.T) {
 	licenseReportFile := "testoutput/test-license-report.xml"
-	cmd := exec.Command("hawkbuild", "license", "--config",
+	args := []string{"license", "--config",
 		"../config/testdata/build-config.yaml",
 		"-l", "../config/testdata/licenses.yaml",
-		"-t", licenseReportFile)
-	err := cmd.Run()
+		"-r", licenseReportFile}
+	RootCmd.SetArgs(args)
+	err := RootCmd.Execute()
 	if err != nil {
 		t.Fatalf("Unable to run basic command: %v", err)
 	}
@@ -38,13 +38,14 @@ func TestLicenseCmd(t *testing.T) {
 	test.AssertTrue(t, len(licenseReport.Artifacts) > 1)
 }
 
-func TestLicenseCmdReverse(t *testing.T) {
+func TestLicenseCmdGenerateConfig(t *testing.T) {
 	const buildConfigOutputFile = "testoutput/test-reverse-build-config.yaml"
-	cmd := exec.Command("hawkbuild", "license", "-r",
+	args := []string{"license", "-g",
 		"--config", buildConfigOutputFile,
 		"-l", "../config/testdata/licenses.yaml",
-		"-t", "../config/testdata/license-report.xml")
-	err := cmd.Run()
+		"-r", "../config/testdata/license-report.xml"}
+	RootCmd.SetArgs(args)
+	err := RootCmd.Execute()
 	if err != nil {
 		t.Fatalf("Unable to run basic command: %v", err)
 	}
