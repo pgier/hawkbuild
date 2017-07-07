@@ -20,7 +20,6 @@ import (
 	"fmt"
 
 	"github.com/pgier/hawkbuild/config"
-	"github.com/pgier/hawkbuild/util"
 	"github.com/spf13/cobra"
 )
 
@@ -35,50 +34,54 @@ const (
 var licenseCmd = &cobra.Command{
 	Use:   "license",
 	Short: "Management and reporting for project licenses",
-	Long:  "Management and reporting for project licenses",
+	Long: "Management and reporting for project licenses." +
+		"by default will print all licenses in the current config.",
 	Run: func(cmd *cobra.Command, args []string) {
-		runLicenseCmd(cmd)
+		runLicenseCmd()
 	},
 }
 
-func init() {
-	RootCmd.AddCommand(licenseCmd)
-
-	licenseCmd.Flags().StringP("license-config", "l",
-		defaultLicenseConfigFile, "License config file")
-	licenseCmd.Flags().StringP("report", "r",
-		defaultLicenseReportFile, "License report XML file")
-	licenseCmd.Flags().BoolP("generate-config", "g", false,
-		`Generate a build config from an existing license report file.  This
-		is the reverse of the default process`)
+var licenseReportCmd = &cobra.Command{
+	Use:   "report",
+	Short: "Generarte license report",
+	Long:  "Print a license report to a file",
+	Run: func(cmd *cobra.Command, args []string) {
+		runLicenseReportCmd(reportOutputFile)
+	},
 }
 
-func runLicenseCmd(cmd *cobra.Command) {
-	configFile := cfgFile
-	licenseConfigFile, err := cmd.Flags().GetString("license-config")
-	util.Check(err)
-	licenseReportFile, err := cmd.Flags().GetString("report")
-	util.Check(err)
-	generateConfig, err := cmd.Flags().GetBool("generate-config")
-	util.Check(err)
+var (
+	spdxID           bool
+	reportOutputFile string
+)
 
+func init() {
+	RootCmd.AddCommand(licenseCmd)
+	licenseCmd.Flags().BoolVar(&spdxID, "spdxid", false, "Print the SPDX identifier")
+	licenseCmd.AddCommand(licenseReportCmd)
+	licenseReportCmd.Flags().StringVarP(&reportOutputFile, "output", "o",
+		defaultLicenseReportFile, "License report output file")
+}
+
+func runLicenseCmd() {
+	for name, license := range config.DefaultLicenseConfig.Licenses {
+		if spdxID {
+			fmt.Println(license.ShortName)
+		} else {
+			fmt.Println(name)
+		}
+	}
+}
+
+func runLicenseReportCmd(outputFile string) {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Println("Problem accessing input file ", r)
 		}
 	}()
 
-	if licenseConfigFile != defaultLicenseConfigFile {
-		util.CheckFileExists(licenseConfigFile)
+	if len(configFiles) > 0 {
+		config.GenerateLicenseReport(configFiles, outputFile)
 	}
-	licenses := config.ReadLicenseConfig(licenseConfigFile)
 
-	if generateConfig {
-		licReport := config.ReadLicenseReportFile(licenseReportFile)
-		productConfig := config.LicenseReportToProductConfig(licenses, licReport)
-		config.WriteProductConfig(productConfig, configFile)
-	} else {
-		productConfig := config.ReadProductConfig(configFile)
-		config.WriteLicenseReportFile(licenses, productConfig, licenseReportFile)
-	}
 }

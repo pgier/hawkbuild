@@ -39,6 +39,15 @@ func CheckFileExists(file string) {
 	}
 }
 
+// IsFile returns true is the given path points to an existing file, false otherwise
+func IsFile(path string) bool {
+	fileMode, err := os.Stat(path)
+	if err != nil || fileMode.IsDir() {
+		return false
+	}
+	return true
+}
+
 // StringInSlice checks if a string is contained in the slice
 func StringInSlice(a string, list []string) bool {
 	for _, b := range list {

@@ -41,6 +41,13 @@ func TestCheckFileExists(t *testing.T) {
 	CheckFileExists(tempFile.Name())
 }
 
+func TestIsFile(t *testing.T) {
+	tempFile, err := ioutil.TempFile(os.TempDir(), "hawkbuild-test-isfile")
+	test.AssertTrue(t, err == nil)
+	test.AssertTrue(t, IsFile(tempFile.Name()))
+	test.AssertTrue(t, !IsFile("file/does/not/exist"))
+}
+
 func TestCheckFileExistsFail(t *testing.T) {
 	badFile := "foo_bar.txt"
 	defer func() {

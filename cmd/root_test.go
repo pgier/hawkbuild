@@ -16,32 +16,17 @@ limitations under the License.
 
 package cmd
 
-import (
-	"testing"
+import "testing"
 
-	"github.com/pgier/hawkbuild/config"
-	"github.com/pgier/hawkbuild/test"
-)
-
-func clearLicenseCmdFlags() {
-	clearRootCmdFlags()
-}
-
-func TestLicenseCmd(t *testing.T) {
-	clearLicenseCmdFlags()
-}
-
-func TestLicenseReportCmd(t *testing.T) {
-	clearLicenseCmdFlags()
-	licenseReportFile := "testoutput/test-license-report.xml"
-	args := []string{"license", "report", "--config",
-		"../config/examples/build-config.yaml",
-		"-o", licenseReportFile}
+func TestRoot(t *testing.T) {
+	args := []string{"-h"}
 	RootCmd.SetArgs(args)
 	err := RootCmd.Execute()
 	if err != nil {
-		t.Fatalf("Unable to run basic command: %v", err)
+		t.Fatalf("Unable to run command: %v", err)
 	}
-	licenseReport := config.ReadLicenseReportFile(licenseReportFile)
-	test.AssertTrue(t, len(licenseReport.Artifacts) > 1)
+}
+
+func clearRootCmdFlags() {
+	configFiles = []string{}
 }

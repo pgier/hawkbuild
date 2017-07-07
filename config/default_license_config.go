@@ -16,61 +16,78 @@ limitations under the License.
 
 package config
 
-// DefaultLicenseConfig default license config based on the Fedora Licensing
-// list (https://fedoraproject.org/wiki/Licensing:Main) which in turn is is
-// based on the licenses approved by the Free Software Foundation , OSI
-// and consultation with Red Hat Legal.
-const DefaultLicenseConfig = `
+import (
+	"github.com/pgier/hawkbuild/util"
+	yaml "gopkg.in/yaml.v2"
+)
+
+// DefaultLicenseConfig default license config based on the
+// and Fedora Licensing
+// list (https://fedoraproject.org/wiki/Licensing:Main)
+var DefaultLicenseConfig BuildConfig
+
+func init() {
+	err := yaml.Unmarshal([]byte(defaultLicenseConfig), &DefaultLicenseConfig)
+	util.Check(err)
+}
+
+const defaultLicenseConfig = `
+# License names and short names are based on the Linux Foundation SPDX license
+# list
+# https://spdx.org/licenses/
+# The alt-names field includes similar names which refer to the same license
+# The license-text field provides the SPDX url to the license text
+# The upstream-url provides the url to the origin of the license (if available)
 ---
-# Based on the Fedora license list maintained on the Fedora wiki
-# https://fedoraproject.org/wiki/Licensing:Main
-#
+licenses:
+  Apache Software License 2.0:
+    short-name: Apache-2.0
+    url: 'https://spdx.org/licenses/Apache-2.0.html'
+    upstream-url: 'http://www.apache.org/licenses/LICENSE-2.0'
+    alt-names:
+      - Apache License, Version 2.0
+      - The Apache Software License, Version 2.0
 
-Apache Software License 2.0:
-  short-name: ASL 2.0
-  upstream-url: 'http://www.apache.org/licenses/LICENSE-2.0'
-  alt-names:
-    - The Apache Software License, Version 2.0
-    - Apache License, Version 2.0
+  BSD 4-clause "Original" or "Old" License:
+    short-name: BSD-4-Clause
+    url: 'https://spdx.org/licenses/BSD-4-Clause.html'
+    upstream-url: 'http://directory.fsf.org/wiki/License:BSD_4Clause'
+    alt-names:
+      - BSD with advertising
+      - BSD License (original)
 
-BSD License (original):
-  short-name: BSD with advertising
-  upstream-url: 'https://fedoraproject.org/wiki/Licensing/BSD#BSDwithAdvertising'
-  alt-names:
-    - BSD License
-    - The BSD License
+  BSD 3-clause "New" or "Revised" License:
+    short-name: BSD-3-Clause
+    url: 'https://spdx.org/licenses/BSD-3-Clause.html'
+    upstream-url: 'http://www.opensource.org/licenses/BSD-3-Clause'
 
-BSD License (no advertising):
-  short-name: BSD
-  upstream-url: 'https://fedoraproject.org/wiki/Licensing/BSD#3ClauseBSD'
-  alt-names:
-    - 3-Clause BSD License
+  Common Development and Distribution License 1.0:
+    short-name: CDDL-1.0
+    url: 'https://spdx.org/licenses/CDDL-1.0.html'
+    upstream-url: 'http://www.opensource.org/licenses/cddl1'
 
-Common Development Distribution License:
-  short-name: CDDL
-  upstream-url: 'https://fedoraproject.org/wiki/Licensing/CDDL'
+  Eclipse Public License 1.0:
+    short-name: EPL-1.0
+    url: 'https://spdx.org/licenses/EPL-1.0.html'
+    upstream-url: 'http://www.eclipse.org/legal/epl-v10.html'
 
-Eclipse Public License 1.0:
-  short-name: EPL
-  upstream-url: 'http://www.eclipse.org/legal/epl-v10.html'
+  GNU Lesser General Public License v2.1 only:
+    short-name: LGPL-2.1
+    url: 'https://spdx.org/licenses/LGPL-2.1.html'
+    upstream-url: 'http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html'
+    alt-names:
+      - GNU Lesser General Public License v2
 
-GNU Lesser General Public License v2 (or 2.1) only:
-  short-name: LGPLv2
-  upstream-url: 'http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html'
-  alt-names:
-    - GNU Lesser General Public License v2
+  GNU General Public License v2.0 only:
+    short-name:  	GPL-2.0
+    url: 'https://spdx.org/licenses/GPL-2.0.html'
+    upstream-url: 'http://www.gnu.org/licenses/old-licenses/gpl-2.0-standalone.html'
 
-GNU General Public License v2.0 only, with Classpath exception:
-  short-name: GPLv2 with exceptions
-  upsteam-url: 'https://fedoraproject.org/wiki/Licensing/GPL_Classpath_Exception'
-  alt-names:
-    - GNU General Public License, Version 2 with the Classpath Exception
-
-MIT license:
-  short-name: MIT
-  upstream-url: 'https://fedoraproject.org/wiki/Licensing/MIT'
-  alt-names:
-    - MIT license (also X11)
+  MIT license:
+    short-name: MIT
+    url: 'https://spdx.org/licenses/MIT.html'
+    alt-names:
+      - MIT license (also X11)
 ...
 
 `

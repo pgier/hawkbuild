@@ -52,12 +52,11 @@ func TestDefaultCmd(t *testing.T) {
 	}
 }
 
-func TestLicenseCmdExec(t *testing.T) {
+func TestLicenseReportCmdExec(t *testing.T) {
 	licenseReportFile := "testoutput/test-license-report.xml"
-	cmd := exec.Command(execName, "license",
+	cmd := exec.Command(execName, "license", "report",
 		"--config", "config/testdata/build-config.yaml",
-		"-l", "config/testdata/licenses.yaml",
-		"-r", licenseReportFile)
+		"-o", licenseReportFile)
 	err := cmd.Run()
 	if err != nil {
 		t.Fatalf("Unable to run command: %v", err)
