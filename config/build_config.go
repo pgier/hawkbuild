@@ -28,10 +28,15 @@ import (
 
 // License represents a software license for a package/project
 type License struct {
-	Name        string   `xml:"name"`
-	ShortName   string   `xml:"-" yaml:"short-name"`
-	AltNames    []string `xml:"-" yaml:"alt-names"`
-	UpstreamURL string   `xml:"url" yaml:"upstream-url"`
+	Name       string   `xml:"name"`
+	URL        string   `xml:"url" yaml:"url"`
+	SpdxName   string   `xml:"-" yaml:"spdx_name"`
+	SpdxAbbr   string   `xml:"-" yaml:"spdx_abbrev"`
+	SpdxURL    string   `xml:"-" yaml:"spdx_url"`
+	FedoraName string   `xml:"-" yaml:"fedora_name"`
+	FedoraAbbr string   `xml:"-" yaml:"fedora_abbrev"`
+	AltNames   []string `xml:"-" yaml:"alt_names"`
+	RHApproved string   `xml:"-" yaml:"rh_approved"`
 }
 
 // MavenArtifact represents a jar file or other Maven build artifact
@@ -110,6 +115,7 @@ func getMatchingLicenses(configs []BuildConfig, licNames []string) []License {
 	for _, name := range licNames {
 		for _, config := range configs {
 			if license, ok := config.Licenses[name]; ok {
+				license.Name = name
 				licList = append(licList, license)
 				break
 			}
@@ -133,18 +139,6 @@ type LicenseReport struct {
 	Artifacts []MavenArtifact `xml:"dependencies>dependency"`
 }
 
-// createLicenseShortNameMap creates a map keyed by the short name instead of the full license name
-func createLicenseShortNameMap(licenses map[string]License) map[string]License {
-	licensesByShortName := make(map[string]License)
-	for name, license := range licenses {
-		if license.Name == "" {
-			license.Name = name
-		}
-		licensesByShortName[license.ShortName] = license
-	}
-	return licensesByShortName
-}
-
 // licenseReportToBuildConfig converts from license summary to build config
 func licenseReportToBuildConfig(configs []BuildConfig, licReport LicenseReport) BuildConfig {
 	config := BuildConfig{Projects: make(map[string]Project)}
@@ -155,8 +149,8 @@ func licenseReportToBuildConfig(configs []BuildConfig, licReport LicenseReport) 
 		project := config.Projects[artifact.GroupID]
 		for _, nextLicense := range artifact.Licenses {
 			if license, found := findLicenseByName(configs, nextLicense.Name); found {
-				if !util.StringInSlice(license.ShortName, project.Licenses) {
-					project.Licenses = append(project.Licenses, license.ShortName)
+				if !util.StringInSlice(license.Name, project.Licenses) {
+					project.Licenses = append(project.Licenses, license.Name)
 				}
 			} else {
 				fmt.Printf("License '%s' not found in license config.\n", nextLicense.Name)

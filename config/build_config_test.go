@@ -25,8 +25,7 @@ import (
 const (
 	testBuildConfigFile        = "examples/build-config.yaml"
 	testProjectName            = "my-test-project1"
-	apacheLicenseShortName     = "Apache-2.0"
-	apacheLicenseFullName      = "Apache Software License 2.0"
+	apacheLicenseName          = "Apache Software License 2.0"
 	expectedProjectVersion     = "1.0"
 	licenseReportXMLFile       = "testoutput/license-report.xml"
 	expectedArtifact1          = "test-project1-artifact1"
@@ -34,18 +33,12 @@ const (
 	BuildConfigOutputFile      = "testoutput/build-config-test.yaml"
 )
 
-func TestCreateLicenseShortNameMap(t *testing.T) {
-	licenses := DefaultLicenseConfig.Licenses
-	licShortNameMap := createLicenseShortNameMap(licenses)
-	test.AssertEqual(t, apacheLicenseFullName, licShortNameMap[apacheLicenseShortName].Name)
-}
-
 func TestReadBuildConfigFile(t *testing.T) {
 	config := ReadBuildConfigFile(testBuildConfigFile)
 	test.AssertEqual(t, 2, len(config.Projects))
 	project1 := config.Projects[testProjectName]
 	test.AssertTrue(t, (len(project1.Licenses) > 0))
-	test.AssertEqual(t, apacheLicenseShortName, project1.Licenses[0])
+	test.AssertEqual(t, apacheLicenseName, project1.Licenses[0])
 	test.AssertEqual(t, expectedProjectVersion, project1.Version)
 	test.AssertEqual(t, expectedArtifact1, project1.MavenArtifacts[0].ArtifactID)
 }

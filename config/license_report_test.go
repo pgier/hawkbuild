@@ -43,6 +43,8 @@ func TestGenerateLicenseReport(t *testing.T) {
 	ok, artifact := findArtifactByArtifactID(licenseReport.Artifacts, expectedArtifact1)
 	test.AssertTrue(t, ok)
 	test.AssertEqual(t, expectedArtifact1, artifact.ArtifactID)
+	test.AssertEqual(t, 1, len(artifact.Licenses))
+	test.AssertEqual(t, "Apache Software License 2.0", artifact.Licenses[0].Name)
 }
 
 func TestReadLicenseReportFile(t *testing.T) {
@@ -51,8 +53,8 @@ func TestReadLicenseReportFile(t *testing.T) {
 	found, artifact := findArtifactByArtifactID(licenseSummary.Artifacts, "project1-artifact1")
 	test.AssertTrue(t, found)
 	test.AssertEqual(t, expectedProjectVersion, artifact.Version)
-	test.AssertEqual(t, "Apache Software License 2.0", artifact.Licenses[0].Name)
 	test.AssertEqual(t, 2, len(artifact.Licenses))
+	test.AssertEqual(t, "Apache Software License 2.0", artifact.Licenses[0].Name)
 }
 
 func TestLicenseReportToBuildConfig(t *testing.T) {

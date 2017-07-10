@@ -17,13 +17,14 @@ default-build-target: jb-mm-7.0
 
 licenses:
   Dummy License 1.0:
-    short-name: DL 1.0
+    spdx_name: "Dummy License 1.0"
+    spdx_abbrev: DL 1.0
     url: 'http://www.foo.bar/license.txt'
-    upstream-url: 'http://www.foo.bar/license.txt'
-    alt-names:
+    spdx_url: 'http://www.foo.bar/license.txt'
+    alt_names:
       - Test Dummy License, Version 1.0
   Dummy License, Version 2.0:
-    short-name: "Dummy License, Version 2.0"
+    fedora_name: "Dummy License, Version 2.0"
     url: 'http://www.foo.com/license-2.0.txt'
 
 projects:
@@ -35,7 +36,7 @@ projects:
     build-type: maven-build
     build-options:
     licenses:
-      - Apache-2.0
+      - Apache Software License 2.0
     maven-artifacts:
       - groupId: org.test.project1
         artifactId: test-project1-artifact1
@@ -46,8 +47,7 @@ projects:
     version: 2.1.0.Beta1
     maven-groupid: org.test.project2
     licenses:
-      - Apache-2.0
-      - foo
+      - Apache Software License 2.0
       - Dummy License 1.0
     maven-artifacts:
       - artifactId: test-project2-artifact1

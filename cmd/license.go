@@ -66,7 +66,7 @@ func init() {
 func runLicenseCmd() {
 	for name, license := range config.DefaultLicenseConfig.Licenses {
 		if spdxID {
-			fmt.Println(license.ShortName)
+			fmt.Println(license.Name)
 		} else {
 			fmt.Println(name)
 		}
@@ -83,5 +83,4 @@ func runLicenseReportCmd(outputFile string) {
 	if len(configFiles) > 0 {
 		config.GenerateLicenseReport(configFiles, outputFile)
 	}
-
 }
