@@ -50,6 +50,14 @@ var licenseReportCmd = &cobra.Command{
 	},
 }
 
+var licenseCheckCmd = &cobra.Command{
+	Use:   "check",
+	Short: "Check for licenses which are unknown and/or not approved",
+	Run: func(cmd *cobra.Command, args []string) {
+		runLicenseCheckCmd()
+	},
+}
+
 var (
 	spdxID           bool
 	reportOutputFile string
@@ -61,6 +69,7 @@ func init() {
 	licenseCmd.AddCommand(licenseReportCmd)
 	licenseReportCmd.Flags().StringVarP(&reportOutputFile, "output", "o",
 		defaultLicenseReportFile, "License report output file")
+	licenseCmd.AddCommand(licenseCheckCmd)
 }
 
 func runLicenseCmd() {
@@ -83,4 +92,8 @@ func runLicenseReportCmd(outputFile string) {
 	if len(configFiles) > 0 {
 		config.GenerateLicenseReport(configFiles, outputFile)
 	}
+}
+
+func runLicenseCheckCmd() {
+	config.CheckLicenses(configFiles)
 }

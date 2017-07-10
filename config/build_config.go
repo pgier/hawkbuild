@@ -192,3 +192,32 @@ func MergeConfigFiles(configs []BuildConfig) BuildConfig {
 	// TODO:implement this
 	return newConfig
 }
+
+// CheckLicenses checks for known, approved licenses
+func CheckLicenses(configFiles []string) {
+	configs := ReadBuildConfigFiles(configFiles)
+	for _, conf := range configs {
+		for name := range conf.Licenses {
+			CheckKnownLicense(name)
+			CheckApprovedLicense(name)
+		}
+	}
+}
+
+// CheckKnownLicense checks if the given license is in the known license list
+func CheckKnownLicense(licenseName string) {
+	if _, ok := DefaultLicenseConfig.Licenses[licenseName]; !ok {
+		fmt.Printf("'%v' is not a known license\n", licenseName)
+	}
+
+}
+
+// CheckApprovedLicense check if the given licenses is in the
+// known license list and is approved
+func CheckApprovedLicense(licenseName string) {
+	if license, ok := DefaultLicenseConfig.Licenses[licenseName]; !ok {
+		if license.RHApproved != "yes" {
+			fmt.Printf("'%v' is not approved\n", licenseName)
+		}
+	}
+}
