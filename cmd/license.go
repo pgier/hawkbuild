@@ -28,7 +28,7 @@ const (
 	LicenseCmdDescription    = "Generate a license report from a build configuration yaml file"
 	defaultLicenseConfigFile = "licenses.yaml"
 	defaultConfigFile        = "build-config.yaml"
-	defaultLicenseReportFile = "license-summary.xml"
+	defaultLicenseReportFile = "license-report.xml"
 )
 
 var licenseCmd = &cobra.Command{

@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 
 	"github.com/pgier/hawkbuild/util"
 	"gopkg.in/yaml.v2"
@@ -61,17 +62,27 @@ type Project struct {
 	Licenses         []string        `yaml:"licenses"`
 	MavenArtifacts   []MavenArtifact `yaml:"maven-artifacts" xml:"dependencies"`
 	BuildType        string          `yaml:"build-type"`
-	ScmURL           string          `yaml:"scm-url"`
-	CommitID         string
-	BuildOptions     string `yaml:"build-options,omitempty"`
+	SourceURL        string          `yaml:"source-url"`
+	CommitID         string          `yaml:"commit-id"`
+	BuildArgs        []string        `yaml:"build-args,omitempty"`
 }
 
 // BuildConfig represents a list of project build configs and related info
 type BuildConfig struct {
-	defaultTarget string
+	DefaultTarget string `yaml:"default-build-target"`
 	Projects      map[string]Project
 	Licenses      map[string]License
 }
+
+// BuildCommand contains info for running a build command
+/*type BuildCommand struct {
+	Command     string
+	SourceURL   string
+	CommitID    string
+	Options     string
+	BuildTarget string
+	Scratch     bool
+}*/
 
 // ReadBuildConfigFiles reads a list of build config files
 func ReadBuildConfigFiles(configFiles []string) []BuildConfig {
@@ -197,27 +208,62 @@ func MergeConfigFiles(configs []BuildConfig) BuildConfig {
 func CheckLicenses(configFiles []string) {
 	configs := ReadBuildConfigFiles(configFiles)
 	for _, conf := range configs {
-		for name := range conf.Licenses {
-			CheckKnownLicense(name)
-			CheckApprovedLicense(name)
+		for projName, project := range conf.Projects {
+			CheckProjectLicenses(projName, project)
 		}
 	}
 }
 
-// CheckKnownLicense checks if the given license is in the known license list
-func CheckKnownLicense(licenseName string) {
-	if _, ok := DefaultLicenseConfig.Licenses[licenseName]; !ok {
-		fmt.Printf("'%v' is not a known license\n", licenseName)
+// CheckProjectLicenses checks the licenses for a given project
+func CheckProjectLicenses(projName string, project Project) {
+	for _, licenseName := range project.Licenses {
+		if _, ok := DefaultLicenseConfig.Licenses[licenseName]; !ok {
+			fmt.Printf("project: %v, license: '%v' not a known license\n",
+				projName, licenseName)
+		}
+		if license, ok := DefaultLicenseConfig.Licenses[licenseName]; !ok {
+			if license.RHApproved != "yes" {
+				fmt.Printf("project: %v, license: '%v' is not approved\n",
+					projName, licenseName)
+			}
+		}
 	}
-
 }
 
-// CheckApprovedLicense check if the given licenses is in the
-// known license list and is approved
-func CheckApprovedLicense(licenseName string) {
-	if license, ok := DefaultLicenseConfig.Licenses[licenseName]; !ok {
-		if license.RHApproved != "yes" {
-			fmt.Printf("'%v' is not approved\n", licenseName)
-		}
+// BuildProject build a project from a config
+func BuildProject(project Project, target string, scratch bool, print bool) {
+	cmd := createBuildCommand(project, target, scratch)
+	if print {
+		fmt.Printf("%v\n", *cmd)
+	} else {
+		runBuild(cmd)
+	}
+}
+
+func createBuildCommand(project Project, target string, scratch bool) *exec.Cmd {
+	cmdArgs := []string{}
+	cmdArgs = append(cmdArgs, "maven-build")
+	buildSourceURL := "git+" + project.SourceURL + "#" + project.CommitID
+	cmdArgs = append(cmdArgs, "--sources", buildSourceURL)
+	cmdArgs = append(cmdArgs, "--target", target)
+	cmdArgs = append(cmdArgs, project.BuildArgs...)
+	if scratch {
+		cmdArgs = append(cmdArgs, "--scratch")
+	}
+
+	cmd := exec.Command("rhpkg", cmdArgs...)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	return cmd
+}
+
+// runBuild runs the build command
+func runBuild(cmd *exec.Cmd) {
+	fmt.Println(*cmd)
+	err := cmd.Run()
+	if err != nil {
+		fmt.Println("Error: ", err)
 	}
 }

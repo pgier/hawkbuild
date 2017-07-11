@@ -31,7 +31,7 @@ projects:
   my-test-project1:
     owner: jdoe
     version: 1.0
-    scm-url: "http://github.com/my-test-project1"
+    source-url: "http://github.com/my-test-project1"
     commit-id: abcd1234
     build-type: maven-build
     build-options:
