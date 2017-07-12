@@ -216,6 +216,10 @@ func CheckLicenses(configFiles []string) {
 
 // CheckProjectLicenses checks the licenses for a given project
 func CheckProjectLicenses(projName string, project Project) {
+	if len(project.Licenses) == 0 {
+		fmt.Printf("project: %v, has not defined any license\n", projName)
+		return
+	}
 	for _, licenseName := range project.Licenses {
 		if _, ok := DefaultLicenseConfig.Licenses[licenseName]; !ok {
 			fmt.Printf("project: %v, license: '%v' not a known license\n",
