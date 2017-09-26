@@ -38,7 +38,7 @@ var archanalCmd = &cobra.Command{
 	Long: `Analyze an archive file
 
 Default behaviour is to print the tree of nested archives inside an 
-archive (zip, gz, etc).`,
+archive (zip, jar, etc).`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 
 		if len(args) < 1 {
