@@ -31,11 +31,11 @@ var (
 	archiveFileName string
 )
 
-// archanalCmd represents the archanal command
-var archanalCmd = &cobra.Command{
-	Use:   "archanal <filename>",
-	Short: "Analyze an archive file",
-	Long: `Analyze an archive file
+// archtreeCmd represents the archtree command
+var archtreeCmd = &cobra.Command{
+	Use:   "archtree <filename>",
+	Short: "Print tree of nested archives",
+	Long: `Print tree of nested archives
 
 Default behaviour is to print the tree of nested archives inside an 
 archive (zip, jar, etc).`,
@@ -55,17 +55,17 @@ archive (zip, jar, etc).`,
 }
 
 func init() {
-	RootCmd.AddCommand(archanalCmd)
+	RootCmd.AddCommand(archtreeCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// archanalCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// archtreeCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// archanalCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// archtreeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 // ArchiveNode represents a node/entry in the archive
